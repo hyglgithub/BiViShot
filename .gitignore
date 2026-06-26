@@ -1,0 +1,14 @@
+# Development docs
+docs/
+CLAUDE.md
+BiViShot开发计划.md
+
+# Release packages
+release/
+
+# Claude settings
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
