@@ -2,7 +2,8 @@
  * BiViShot Capture Module
  * Captures video frames using OffscreenCanvas
  */
-const BiViShot = window.BiViShot || {};
+window.BiViShot = window.BiViShot || {};
+var BiViShot = window.BiViShot;
 
 BiViShot.capture = (() => {
   const VIDEO_SELECTORS = [

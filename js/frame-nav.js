@@ -2,7 +2,8 @@
  * BiViShot Frame Navigation Module
  * Navigate between video frames when paused
  */
-const BiViShot = window.BiViShot || {};
+window.BiViShot = window.BiViShot || {};
+var BiViShot = window.BiViShot;
 
 BiViShot.frameNav = (() => {
   function getVideoElement() {

@@ -2,7 +2,8 @@
  * BiViShot Settings Module (Inline)
  * Shows settings panel directly on the page
  */
-const BiViShot = window.BiViShot || {};
+window.BiViShot = window.BiViShot || {};
+var BiViShot = window.BiViShot;
 
 BiViShot.settings = (() => {
   let panelEl = null;

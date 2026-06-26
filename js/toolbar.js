@@ -2,7 +2,8 @@
  * BiViShot Toolbar Module
  * Creates floating draggable toolbar with capture controls
  */
-const BiViShot = window.BiViShot || {};
+window.BiViShot = window.BiViShot || {};
+var BiViShot = window.BiViShot;
 
 BiViShot.toolbar = (() => {
   let toolbarEl = null;
