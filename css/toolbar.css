@@ -110,3 +110,62 @@
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-10px); }
 }
+
+/* Settings Panel */
+.bivishot-settings-panel .bivishot-settings-header {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.bivishot-settings-panel .bivishot-settings-group {
+  margin-bottom: 12px;
+}
+
+.bivishot-settings-panel .bivishot-settings-label {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+
+.bivishot-settings-panel .bivishot-settings-radios {
+  display: flex;
+  gap: 10px;
+}
+
+.bivishot-settings-panel .bivishot-settings-radios label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.bivishot-settings-panel .bivishot-settings-slider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bivishot-settings-panel input[type="range"] {
+  flex: 1;
+  accent-color: #00a1d6;
+}
+
+.bivishot-settings-panel .bivishot-settings-reset {
+  width: 100%;
+  padding: 6px;
+  background: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.bivishot-settings-panel .bivishot-settings-reset:hover {
+  background: #444;
+}

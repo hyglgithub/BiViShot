@@ -21,6 +21,7 @@
         "js/storage.js",
         "js/capture.js",
         "js/frame-nav.js",
+        "js/settings.js",
         "js/toolbar.js",
         "js/content.js"
       ],
