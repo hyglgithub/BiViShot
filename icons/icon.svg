@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" rx="20" fill="#00a1d6"/>
+  <g transform="translate(24, 24)" fill="white">
+    <!-- Camera body -->
+    <rect x="8" y="24" width="64" height="44" rx="6" fill="none" stroke="white" stroke-width="5"/>
+    <!-- Lens -->
+    <circle cx="40" cy="46" r="14" fill="none" stroke="white" stroke-width="5"/>
+    <!-- Flash -->
+    <rect x="24" y="16" width="16" height="8" rx="2"/>
+  </g>
+</svg>
