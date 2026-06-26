@@ -3,20 +3,19 @@
  * Floating icon toolbar for video frame capture
  */
 
-/* Container for toolbar + settings */
-.bivishot-container {
+/* Outer container - width fits toolbar content */
+.bivishot-box {
   position: fixed;
   z-index: 99999;
-  display: flex;
-  flex-direction: column;
+  width: fit-content;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Toolbar */
-.bivishot-toolbar {
+/* Toolbar bar */
+.bivishot-bar {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   padding: 6px 8px;
   background: rgba(30, 30, 30, 0.95);
   border-radius: 8px;
@@ -29,16 +28,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
+  width: 16px;
   height: 32px;
   cursor: grab;
-  opacity: 0.5;
-  transition: opacity 0.15s ease;
-  padding: 0 2px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.15s ease;
 }
 
 .bivishot-drag-handle:hover {
-  opacity: 1;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .bivishot-drag-handle:active {
@@ -46,8 +44,8 @@
 }
 
 .bivishot-drag-handle svg {
-  width: 12px;
-  height: 24px;
+  width: 10px;
+  height: 20px;
 }
 
 /* Buttons */
@@ -62,6 +60,7 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  color: white;
   transition: all 0.15s ease;
   padding: 0;
 }
@@ -114,14 +113,16 @@
   opacity: 1;
 }
 
-/* Settings Panel - integrated below toolbar */
-.bivishot-settings-panel {
-  background: rgba(30, 30, 30, 0.95);
-  border-radius: 0 0 8px 8px;
+/* Settings Panel - positioned below toolbar, same width */
+.bivishot-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
   padding: 12px;
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  margin-top: -2px;
-  min-width: 100%;
 }
 
 .bivishot-settings-group {
@@ -142,7 +143,7 @@
 
 .bivishot-settings-radios {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 

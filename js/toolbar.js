@@ -8,24 +8,23 @@
   window.BiViShot = window.BiViShot || {};
 
   window.BiViShot.toolbar = (() => {
-    let containerEl = null;  // Container for toolbar + settings
-    let toolbarEl = null;
-    let settingsPanelEl = null;
+    let boxEl = null;      // Outer container
+    let toolbarEl = null;  // Toolbar bar
+    let panelEl = null;    // Settings panel
     let videoEl = null;
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
     let longPressTimer = null;
     let longPressInterval = null;
-    let isSettingsOpen = false;
 
-    // Better SVG icons (Material Design style)
+    // SVG icons (Feather style)
     const ICONS = {
-      capture: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
-      clipboard: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
-      prevFrame: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>',
-      nextFrame: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>',
-      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
-      dragHandle: '<svg viewBox="0 0 24 24" fill="white"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>'
+      capture: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+      clipboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+      prevFrame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>',
+      nextFrame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>',
+      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+      dragHandle: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>'
     };
 
     const TOOLTIPS = {
@@ -59,12 +58,12 @@
     }
 
     function setupDrag() {
-      const dragHandle = containerEl.querySelector('.bivishot-drag-handle');
+      const dragHandle = boxEl.querySelector('.bivishot-drag-handle');
       if (!dragHandle) return;
 
       dragHandle.addEventListener('mousedown', (e) => {
         isDragging = true;
-        const rect = containerEl.getBoundingClientRect();
+        const rect = boxEl.getBoundingClientRect();
         dragOffset.x = e.clientX - rect.left;
         dragOffset.y = e.clientY - rect.top;
         e.preventDefault();
@@ -76,26 +75,27 @@
         let y = e.clientY - dragOffset.y;
 
         // Clamp to viewport bounds
-        const containerRect = containerEl.getBoundingClientRect();
-        x = Math.max(0, Math.min(x, window.innerWidth - containerRect.width));
-        y = Math.max(0, Math.min(y, window.innerHeight - containerRect.height));
+        const boxRect = boxEl.getBoundingClientRect();
+        x = Math.max(0, Math.min(x, window.innerWidth - boxRect.width));
+        y = Math.max(0, Math.min(y, window.innerHeight - boxRect.height));
 
-        containerEl.style.left = `${x}px`;
-        containerEl.style.top = `${y}px`;
+        boxEl.style.left = `${x}px`;
+        boxEl.style.top = `${y}px`;
       });
 
       document.addEventListener('mouseup', async () => {
         if (!isDragging) return;
         isDragging = false;
         await window.BiViShot.storage.set('toolbarPosition', {
-          x: parseInt(containerEl.style.left),
-          y: parseInt(containerEl.style.top)
+          x: parseInt(boxEl.style.left),
+          y: parseInt(boxEl.style.top)
         });
       });
     }
 
     function setupLongPress(btn, action) {
-      const startLongPress = () => {
+      const startLongPress = (e) => {
+        e.preventDefault();
         action(); // Execute immediately
         longPressTimer = setTimeout(() => {
           longPressInterval = setInterval(action, 100); // Repeat every 100ms
@@ -113,11 +113,7 @@
         }
       };
 
-      btn.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        startLongPress();
-      });
-
+      btn.addEventListener('mousedown', startLongPress);
       btn.addEventListener('mouseup', stopLongPress);
       btn.addEventListener('mouseleave', stopLongPress);
     }
@@ -133,7 +129,7 @@
 
     function createSettingsPanel() {
       const panel = document.createElement('div');
-      panel.className = 'bivishot-settings-panel';
+      panel.className = 'bivishot-panel';
       panel.innerHTML = `
         <div class="bivishot-settings-group">
           <div class="bivishot-settings-label">截图格式</div>
@@ -153,37 +149,36 @@
           <div class="bivishot-settings-label">帧步长</div>
           <div class="bivishot-settings-radios">
             <label><input type="radio" name="bvs-step" value="1"> 1/1</label>
-            <label><input type="radio" name="bvs-step" value="0.5"> 1/2</label>
-            <label><input type="radio" name="bvs-step" value="0.1"> 1/10</label>
+            <label><input type="radio" name="bvs-step" value="0.2"> 1/5</label>
+            <label><input type="radio" name="bvs-step" value="0.066667"> 1/15</label>
             <label><input type="radio" name="bvs-step" value="0.033333"> 1/30</label>
           </div>
         </div>
         <button class="bivishot-settings-reset" id="bvs-reset-defaults">恢复默认设置</button>
       `;
-
       return panel;
     }
 
     async function loadSettingsValues() {
-      if (!settingsPanelEl) return;
+      if (!panelEl) return;
 
       const format = await window.BiViShot.storage.get('imageFormat');
       const quality = await window.BiViShot.storage.get('jpegQuality');
       const step = await window.BiViShot.storage.get('frameStep');
 
-      const formatRadio = settingsPanelEl.querySelector(`input[name="bvs-format"][value="${format}"]`);
+      const formatRadio = panelEl.querySelector(`input[name="bvs-format"][value="${format}"]`);
       if (formatRadio) formatRadio.checked = true;
 
-      const qualityInput = settingsPanelEl.querySelector('#bvs-quality');
-      const qualityValue = settingsPanelEl.querySelector('#bvs-quality-value');
+      const qualityInput = panelEl.querySelector('#bvs-quality');
+      const qualityValue = panelEl.querySelector('#bvs-quality-value');
       if (qualityInput) qualityInput.value = quality;
       if (qualityValue) qualityValue.textContent = `${quality}%`;
 
-      const qualityGroup = settingsPanelEl.querySelector('#bvs-quality-group');
+      const qualityGroup = panelEl.querySelector('#bvs-quality-group');
       if (qualityGroup) qualityGroup.style.display = format === 'jpeg' ? 'block' : 'none';
 
       // Find closest step value
-      const stepRadios = settingsPanelEl.querySelectorAll('input[name="bvs-step"]');
+      const stepRadios = panelEl.querySelectorAll('input[name="bvs-step"]');
       let closestStep = null;
       let closestDiff = Infinity;
       stepRadios.forEach((radio) => {
@@ -197,18 +192,18 @@
     }
 
     function setupSettingsListeners() {
-      if (!settingsPanelEl) return;
+      if (!panelEl) return;
 
-      settingsPanelEl.querySelectorAll('input[name="bvs-format"]').forEach((radio) => {
+      panelEl.querySelectorAll('input[name="bvs-format"]').forEach((radio) => {
         radio.addEventListener('change', async (e) => {
           await window.BiViShot.storage.set('imageFormat', e.target.value);
-          const qualityGroup = settingsPanelEl.querySelector('#bvs-quality-group');
+          const qualityGroup = panelEl.querySelector('#bvs-quality-group');
           if (qualityGroup) qualityGroup.style.display = e.target.value === 'jpeg' ? 'block' : 'none';
         });
       });
 
-      const qualityInput = settingsPanelEl.querySelector('#bvs-quality');
-      const qualityValue = settingsPanelEl.querySelector('#bvs-quality-value');
+      const qualityInput = panelEl.querySelector('#bvs-quality');
+      const qualityValue = panelEl.querySelector('#bvs-quality-value');
       if (qualityInput) {
         qualityInput.addEventListener('input', async (e) => {
           const val = parseInt(e.target.value);
@@ -217,21 +212,19 @@
         });
       }
 
-      settingsPanelEl.querySelectorAll('input[name="bvs-step"]').forEach((radio) => {
+      panelEl.querySelectorAll('input[name="bvs-step"]').forEach((radio) => {
         radio.addEventListener('change', async (e) => {
           await window.BiViShot.storage.set('frameStep', parseFloat(e.target.value));
         });
       });
 
-      const resetBtn = settingsPanelEl.querySelector('#bvs-reset-defaults');
+      const resetBtn = panelEl.querySelector('#bvs-reset-defaults');
       if (resetBtn) {
         resetBtn.addEventListener('click', async () => {
-          // Reset all settings to defaults
           await window.BiViShot.storage.set('imageFormat', 'png');
           await window.BiViShot.storage.set('jpegQuality', 95);
           await window.BiViShot.storage.set('frameStep', 0.033333);
           await window.BiViShot.storage.set('toolbarPosition', { x: 100, y: 100 });
-          // Reload settings UI
           loadSettingsValues();
           showToast('已恢复默认设置');
         });
@@ -239,25 +232,21 @@
     }
 
     function toggleSettings() {
-      if (isSettingsOpen) {
+      if (panelEl) {
         // Close settings
-        if (settingsPanelEl) {
-          settingsPanelEl.remove();
-          settingsPanelEl = null;
-        }
-        isSettingsOpen = false;
+        panelEl.remove();
+        panelEl = null;
       } else {
         // Open settings
-        settingsPanelEl = createSettingsPanel();
-        containerEl.appendChild(settingsPanelEl);
+        panelEl = createSettingsPanel();
+        boxEl.appendChild(panelEl);
         loadSettingsValues();
         setupSettingsListeners();
-        isSettingsOpen = true;
       }
     }
 
     async function init(video) {
-      if (containerEl) destroy();
+      if (boxEl) destroy();
       videoEl = video;
 
       // Wait for video metadata
@@ -267,13 +256,13 @@
         });
       }
 
-      // Create container
-      containerEl = document.createElement('div');
-      containerEl.className = 'bivishot-container';
+      // Create outer container (like .box in the example)
+      boxEl = document.createElement('div');
+      boxEl.className = 'bivishot-box';
 
-      // Create toolbar
+      // Create toolbar (like .bar in the example)
       toolbarEl = document.createElement('div');
-      toolbarEl.className = 'bivishot-toolbar';
+      toolbarEl.className = 'bivishot-bar';
 
       // Drag handle
       const dragHandle = document.createElement('div');
@@ -288,7 +277,7 @@
         showToast('截图已保存');
       }));
 
-      // Capture to clipboard (hide if not supported)
+      // Capture to clipboard
       if (window.BiViShot.capture.isClipboardSupported()) {
         toolbarEl.appendChild(createButton('clipboard', ICONS.clipboard, TOOLTIPS.clipboard, async () => {
           await window.BiViShot.capture.captureToClipboard();
@@ -296,50 +285,49 @@
         }));
       }
 
-      // Previous frame with long press support
+      // Previous frame with long press
       const prevBtn = createButton('prevFrame', ICONS.prevFrame, TOOLTIPS.prevFrame, () => {
         window.BiViShot.frameNav.previousFrame();
       });
       setupLongPress(prevBtn, () => window.BiViShot.frameNav.previousFrame());
       toolbarEl.appendChild(prevBtn);
 
-      // Next frame with long press support
+      // Next frame with long press
       const nextBtn = createButton('nextFrame', ICONS.nextFrame, TOOLTIPS.nextFrame, () => {
         window.BiViShot.frameNav.nextFrame();
       });
       setupLongPress(nextBtn, () => window.BiViShot.frameNav.nextFrame());
       toolbarEl.appendChild(nextBtn);
 
-      // Settings
+      // Settings button
       toolbarEl.appendChild(createButton('settings', ICONS.settings, TOOLTIPS.settings, () => {
         toggleSettings();
       }));
 
-      containerEl.appendChild(toolbarEl);
+      boxEl.appendChild(toolbarEl);
 
-      // Position container
+      // Position
       const position = await window.BiViShot.storage.get('toolbarPosition');
-      containerEl.style.left = `${position.x}px`;
-      containerEl.style.top = `${position.y}px`;
+      boxEl.style.left = `${position.x}px`;
+      boxEl.style.top = `${position.y}px`;
 
       // Append to body
-      document.body.appendChild(containerEl);
+      document.body.appendChild(boxEl);
 
       setupDrag();
 
-      // Listen for play/pause to update frame buttons
+      // Listen for play/pause
       video.addEventListener('play', updateFrameButtons);
       video.addEventListener('pause', updateFrameButtons);
       updateFrameButtons();
     }
 
     function destroy() {
-      if (containerEl) {
-        containerEl.remove();
-        containerEl = null;
+      if (boxEl) {
+        boxEl.remove();
+        boxEl = null;
         toolbarEl = null;
-        settingsPanelEl = null;
-        isSettingsOpen = false;
+        panelEl = null;
       }
     }
 
