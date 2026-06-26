@@ -1,0 +1,112 @@
+/**
+ * BiViShot Toolbar Styles
+ * Floating icon toolbar for video frame capture
+ */
+
+.bivishot-toolbar {
+  position: absolute;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: grab;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.bivishot-toolbar:active {
+  cursor: grabbing;
+}
+
+.bivishot-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.bivishot-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: #ffffff;
+  transition: transform 0.15s ease;
+}
+
+.bivishot-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.bivishot-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.bivishot-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bivishot-btn.disabled:hover {
+  background: transparent;
+}
+
+.bivishot-btn.disabled:hover svg {
+  transform: none;
+}
+
+/* Tooltip */
+.bivishot-btn .bivishot-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.bivishot-btn:hover .bivishot-tooltip {
+  opacity: 1;
+}
+
+/* Toast notification */
+.bivishot-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 999999;
+  animation: bivishot-toast-in 0.3s ease, bivishot-toast-out 0.3s ease 1.7s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes bivishot-toast-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bivishot-toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
