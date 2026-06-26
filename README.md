@@ -1,6 +1,10 @@
-# BiViShot
+# BiViShot｜B站视频帧截图
 
-B站视频帧截图工具 - Chrome/Edge 浏览器扩展
+[![GitHub all releases downloads](https://img.shields.io/github/downloads/hyglgithub/BiViShot/total?style=flat-square&logo=github&label=downloads)](https://github.com/hyglgithub/BiViShot/releases)
+[![GitHub release](https://img.shields.io/github/v/release/hyglgithub/BiViShot?style=flat-square&label=version)](https://github.com/hyglgithub/BiViShot/releases)
+[![License](https://img.shields.io/github/license/hyglgithub/BiViShot?style=flat-square)](LICENSE)
+
+在 B 站视频页截取当前视频帧，直接从原始视频帧提取图像，几乎无损保存，画面清晰。
 
 ## 功能
 
@@ -10,27 +14,42 @@ B站视频帧截图工具 - Chrome/Edge 浏览器扩展
 - ⏭ **下一帧** — 视频暂停时逐帧前进（支持长按连续移动）
 - ⚙️ **设置** — 配置截图格式、质量、帧步长
 
-## 安装
+### 设置选项
 
-### Chrome
+| 选项 | 说明 |
+|------|------|
+| 截图格式 | PNG（无损）或 JPEG（有损） |
+| JPEG 质量 | 1-100%，仅 JPEG 格式有效 |
+| 帧步长 | 1/1、1/5、1/15、1/30 秒 |
 
-1. 下载或克隆本仓库
-2. 打开 `chrome://extensions/`
-3. 开启"开发者模式"
-4. 点击"加载已解压的扩展程序"
-5. 选择本项目目录（包含 `manifest.json` 的目录）
+## 功能演示
 
-### Edge
+![BiViShot 功能演示](演示图片.png)
 
-1. 下载或克隆本仓库
-2. 打开 `edge://extensions/`
-3. 开启"开发者模式"
-4. 点击"加载解压缩"
-5. 选择本项目目录
+## 安装方式
+
+### Chrome / Edge
+
+1. 在 GitHub 的 [Releases](https://github.com/hyglgithub/BiViShot/releases) 页面下载最新的 `bivishot-v*-chrome.zip` 包
+2. 解压到任意本地目录
+3. 打开扩展管理页：
+   - Chrome：`chrome://extensions/`
+   - Edge：`edge://extensions/`
+4. 开启"开发者模式"
+5. 点击"加载已解压的扩展程序"
+6. 选择解压后的扩展目录（包含 `manifest.json` 的目录）
+
+### 从源码安装
+
+```bash
+git clone https://github.com/hyglgithub/BiViShot.git
+```
+
+然后按照上述步骤 3-6 加载扩展。
 
 ## 使用方法
 
-1. 打开 B 站视频页面（支持视频页、播放列表页、番剧页）
+1. 打开 B 站视频页（支持视频页、播放列表页、番剧页）
 2. 视频区域附近会出现悬浮工具条
 3. 点击工具条上的按钮进行操作
 
@@ -50,15 +69,6 @@ B站视频帧截图工具 - Chrome/Edge 浏览器扩展
 - **点击**：移动一帧
 - **长按**：持续移动（500ms 后开始自动重复）
 
-### 设置选项
-
-| 选项 | 说明 |
-|------|------|
-| 截图格式 | PNG（无损）或 JPEG（有损） |
-| JPEG 质量 | 1-100%，仅 JPEG 格式有效 |
-| 帧步长 | 1/1、1/5、1/15、1/30 秒 |
-| 恢复默认设置 | 重置所有选项为默认值 |
-
 ### 拖动工具条
 
 - 按住左侧拖动手柄（六个点图标）拖动
@@ -69,25 +79,6 @@ B站视频帧截图工具 - Chrome/Edge 浏览器扩展
 
 直接从 `<video>` 元素提取原始帧数据，使用 `OffscreenCanvas` 绘制后转换为图片。由于不经过编码压缩，截图质量接近无损。
 
-### 项目结构
-
-```
-BiViShot/
-├── manifest.json          # 扩展配置
-├── js/
-│   ├── storage.js         # Chrome Storage API 封装
-│   ├── capture.js         # OffscreenCanvas 截图逻辑
-│   ├── frame-nav.js       # 帧导航
-│   ├── toolbar.js         # 工具条 UI 和设置面板
-│   └── content.js         # 入口脚本
-├── css/
-│   └── toolbar.css        # 工具条样式
-├── icons/                 # 扩展图标
-└── popup/
-    ├── popup.html         # 扩展弹窗设置
-    └── popup.js           # 弹窗逻辑
-```
-
 ## 文件大小参考
 
 | 分辨率 | PNG 大小 | JPEG 大小 (95%) |
@@ -96,6 +87,23 @@ BiViShot/
 | 1080p  | ~2.1MB   | ~500KB          |
 | 720p   | ~700KB   | ~200KB          |
 
+## 项目结构
+
+```
+BiViShot/
+├── manifest.json      # 扩展配置 (Manifest V3)
+├── js/
+│   ├── storage.js     # Chrome Storage API 封装
+│   ├── capture.js     # OffscreenCanvas 截图逻辑
+│   ├── frame-nav.js   # 帧导航
+│   ├── toolbar.js     # 工具条 UI 和设置面板
+│   └── content.js     # 入口脚本
+├── css/
+│   └── toolbar.css    # 工具条样式
+├── icons/             # 扩展图标
+└── popup/             # 扩展弹窗设置
+```
+
 ## 兼容性
 
 - Chrome 88+ (Manifest V3)
@@ -103,4 +111,8 @@ BiViShot/
 
 ## 许可证
 
-MIT
+[MIT](LICENSE)
+
+## 免责声明
+
+> ▎ **用户自负责任条款**：本工具仅在用户已登录 B 站、且有访问权限的前提下获取数据。所有数据通过用户自己的浏览器获取，不经过任何第三方服务器。本工具不存储、不分发任何 B 站内容。使用本工具产生的所有后果由用户自行承担。请遵守 B 站用户协议与相关法律法规。
