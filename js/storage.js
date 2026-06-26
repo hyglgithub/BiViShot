@@ -18,6 +18,11 @@
     async function get(key) {
       return new Promise((resolve) => {
         chrome.storage.local.get([key], (result) => {
+          if (chrome.runtime.lastError) {
+            console.warn('[BiViShot] Storage get error:', chrome.runtime.lastError);
+            resolve(DEFAULTS[key]);
+            return;
+          }
           resolve(result[key] !== undefined ? result[key] : DEFAULTS[key]);
         });
       });
@@ -25,13 +30,23 @@
 
     async function set(key, value) {
       return new Promise((resolve) => {
-        chrome.storage.local.set({ [key]: value }, resolve);
+        chrome.storage.local.set({ [key]: value }, () => {
+          if (chrome.runtime.lastError) {
+            console.warn('[BiViShot] Storage set error:', chrome.runtime.lastError);
+          }
+          resolve();
+        });
       });
     }
 
     async function getAll() {
       return new Promise((resolve) => {
         chrome.storage.local.get(null, (result) => {
+          if (chrome.runtime.lastError) {
+            console.warn('[BiViShot] Storage getAll error:', chrome.runtime.lastError);
+            resolve({ ...DEFAULTS });
+            return;
+          }
           resolve({ ...DEFAULTS, ...result });
         });
       });

@@ -5,35 +5,64 @@
 (async function() {
   'use strict';
 
-  async function getSetting(key, defaultValue) {
+  // Default values (same as storage.js DEFAULTS)
+  const DEFAULTS = {
+    imageFormat: 'png',
+    jpegQuality: 95,
+    frameStep: 0.2,  // 1/5 second
+    toolbarPosition: { x: 100, y: 100 }
+  };
+
+  async function getSetting(key) {
     return new Promise((resolve) => {
       chrome.storage.local.get([key], (result) => {
-        resolve(result[key] !== undefined ? result[key] : defaultValue);
+        if (chrome.runtime.lastError) {
+          console.warn('[BiViShot] Storage error:', chrome.runtime.lastError);
+          resolve(DEFAULTS[key]);
+          return;
+        }
+        resolve(result[key] !== undefined ? result[key] : DEFAULTS[key]);
       });
     });
   }
 
   async function setSetting(key, value) {
     return new Promise((resolve) => {
-      chrome.storage.local.set({ [key]: value }, resolve);
+      chrome.storage.local.set({ [key]: value }, () => {
+        if (chrome.runtime.lastError) {
+          console.warn('[BiViShot] Storage error:', chrome.runtime.lastError);
+        }
+        resolve();
+      });
     });
   }
 
   async function loadSettings() {
-    const format = await getSetting('imageFormat', 'png');
-    const quality = await getSetting('jpegQuality', 95);
-    const step = await getSetting('frameStep', 0.033333);
+    const format = await getSetting('imageFormat');
+    const quality = await getSetting('jpegQuality');
+    const step = await getSetting('frameStep');
 
     // Format radio
-    document.querySelector(`input[name="format"][value="${format}"]`).checked = true;
+    const formatRadio = document.querySelector(`input[name="format"][value="${format}"]`);
+    if (formatRadio) formatRadio.checked = true;
 
     // Quality slider
     document.getElementById('quality').value = quality;
     document.getElementById('quality-value').textContent = `${quality}%`;
     document.getElementById('quality-group').style.display = format === 'jpeg' ? 'block' : 'none';
 
-    // Frame step radio
-    document.querySelector(`input[name="step"][value="${step}"]`).checked = true;
+    // Frame step radio - find closest value
+    const stepRadios = document.querySelectorAll('input[name="step"]');
+    let closestStep = null;
+    let closestDiff = Infinity;
+    stepRadios.forEach((radio) => {
+      const diff = Math.abs(parseFloat(radio.value) - step);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestStep = radio;
+      }
+    });
+    if (closestStep) closestStep.checked = true;
   }
 
   function setupListeners() {
@@ -59,9 +88,13 @@
       });
     });
 
-    // Reset position
+    // Reset to defaults
     document.getElementById('reset-position').addEventListener('click', async () => {
-      await setSetting('toolbarPosition', { x: 100, y: 100 });
+      await setSetting('imageFormat', DEFAULTS.imageFormat);
+      await setSetting('jpegQuality', DEFAULTS.jpegQuality);
+      await setSetting('frameStep', DEFAULTS.frameStep);
+      await setSetting('toolbarPosition', DEFAULTS.toolbarPosition);
+      loadSettings(); // Reload UI
     });
   }
 

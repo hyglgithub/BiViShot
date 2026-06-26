@@ -20,16 +20,28 @@
     return null;
   }
 
-  function waitForVideo() {
+  function waitForVideo(timeout = 30000) {
     return new Promise((resolve) => {
       const video = findVideo();
       if (video) {
         resolve(video);
         return;
       }
+
+      let resolved = false;
+      const timeoutId = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          observer.disconnect();
+          resolve(null);  // Timeout - no video found
+        }
+      }, timeout);
+
       const observer = new MutationObserver(() => {
         const video = findVideo();
-        if (video) {
+        if (video && !resolved) {
+          resolved = true;
+          clearTimeout(timeoutId);
           observer.disconnect();
           resolve(video);
         }
@@ -42,10 +54,10 @@
     try {
       const video = await waitForVideo();
       if (!video) {
-        console.warn('[BiViShot] No video element found');
+        console.warn('[BiViShot] No video element found (timeout)');
         return;
       }
-      await BiViShot.toolbar.init(video);
+      await window.BiViShot.toolbar.init(video);
       console.log('[BiViShot] Initialized successfully');
     } catch (err) {
       console.error('[BiViShot] Initialization failed:', err);
@@ -57,7 +69,7 @@
   const urlObserver = new MutationObserver(() => {
     if (location.href !== lastUrl) {
       lastUrl = location.href;
-      BiViShot.toolbar.destroy();
+      window.BiViShot.toolbar.destroy();
       init();
     }
   });

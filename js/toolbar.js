@@ -16,6 +16,7 @@
     let dragOffset = { x: 0, y: 0 };
     let longPressTimer = null;
     let longPressInterval = null;
+    let abortController = null;  // For cleaning up event listeners
 
     // SVG icons (Feather style)
     const ICONS = {
@@ -34,6 +35,15 @@
       nextFrame: '下一帧 (需暂停)',
       settings: '设置'
     };
+
+    // Create button without click handler (for long press buttons)
+    function createButtonNoClick(id, icon, tooltip) {
+      const btn = document.createElement('button');
+      btn.className = 'bivishot-btn';
+      btn.dataset.action = id;
+      btn.innerHTML = `${icon}<span class="bivishot-tooltip">${tooltip}</span>`;
+      return btn;
+    }
 
     function createButton(id, icon, tooltip, onClick) {
       const btn = document.createElement('button');
@@ -61,6 +71,8 @@
       const dragHandle = boxEl.querySelector('.bivishot-drag-handle');
       if (!dragHandle) return;
 
+      const signal = abortController.signal;
+
       dragHandle.addEventListener('mousedown', (e) => {
         isDragging = true;
         const rect = boxEl.getBoundingClientRect();
@@ -81,7 +93,7 @@
 
         boxEl.style.left = `${x}px`;
         boxEl.style.top = `${y}px`;
-      });
+      }, { signal });
 
       document.addEventListener('mouseup', async () => {
         if (!isDragging) return;
@@ -90,7 +102,7 @@
           x: parseInt(boxEl.style.left),
           y: parseInt(boxEl.style.top)
         });
-      });
+      }, { signal });
     }
 
     function setupLongPress(btn, action) {
@@ -221,10 +233,11 @@
       const resetBtn = panelEl.querySelector('#bvs-reset-defaults');
       if (resetBtn) {
         resetBtn.addEventListener('click', async () => {
-          await window.BiViShot.storage.set('imageFormat', 'png');
-          await window.BiViShot.storage.set('jpegQuality', 95);
-          await window.BiViShot.storage.set('frameStep', 0.033333);
-          await window.BiViShot.storage.set('toolbarPosition', { x: 100, y: 100 });
+          const DEFAULTS = window.BiViShot.storage.DEFAULTS;
+          await window.BiViShot.storage.set('imageFormat', DEFAULTS.imageFormat);
+          await window.BiViShot.storage.set('jpegQuality', DEFAULTS.jpegQuality);
+          await window.BiViShot.storage.set('frameStep', DEFAULTS.frameStep);
+          await window.BiViShot.storage.set('toolbarPosition', DEFAULTS.toolbarPosition);
           loadSettingsValues();
           showToast('已恢复默认设置');
         });
@@ -248,6 +261,9 @@
     async function init(video) {
       if (boxEl) destroy();
       videoEl = video;
+
+      // Create new AbortController for this session
+      abortController = new AbortController();
 
       // Wait for video metadata
       if (!video.videoWidth) {
@@ -285,17 +301,13 @@
         }));
       }
 
-      // Previous frame with long press
-      const prevBtn = createButton('prevFrame', ICONS.prevFrame, TOOLTIPS.prevFrame, () => {
-        window.BiViShot.frameNav.previousFrame();
-      });
+      // Previous frame - use createButtonNoClick to avoid double-trigger
+      const prevBtn = createButtonNoClick('prevFrame', ICONS.prevFrame, TOOLTIPS.prevFrame);
       setupLongPress(prevBtn, () => window.BiViShot.frameNav.previousFrame());
       toolbarEl.appendChild(prevBtn);
 
-      // Next frame with long press
-      const nextBtn = createButton('nextFrame', ICONS.nextFrame, TOOLTIPS.nextFrame, () => {
-        window.BiViShot.frameNav.nextFrame();
-      });
+      // Next frame - use createButtonNoClick to avoid double-trigger
+      const nextBtn = createButtonNoClick('nextFrame', ICONS.nextFrame, TOOLTIPS.nextFrame);
       setupLongPress(nextBtn, () => window.BiViShot.frameNav.nextFrame());
       toolbarEl.appendChild(nextBtn);
 
@@ -323,6 +335,22 @@
     }
 
     function destroy() {
+      // Abort all event listeners
+      if (abortController) {
+        abortController.abort();
+        abortController = null;
+      }
+
+      // Clean up long press timers
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+      if (longPressInterval) {
+        clearInterval(longPressInterval);
+        longPressInterval = null;
+      }
+
       if (boxEl) {
         boxEl.remove();
         boxEl = null;
