@@ -37,9 +37,9 @@ BiViShot.settings = (() => {
       <button class="bivishot-settings-reset" id="bvs-reset-pos">重置工具条位置</button>
     `;
 
-    // Style the panel
+    // Style the panel - use fixed positioning to avoid overflow clipping
     Object.assign(panel.style, {
-      position: 'absolute',
+      position: 'fixed',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
@@ -122,9 +122,8 @@ BiViShot.settings = (() => {
       return;
     }
     panelEl = createPanel();
-    const video = BiViShot.capture.getVideoElement();
-    const container = video ? (video.closest('.bpx-player-video-wrap') || video.parentElement) : document.body;
-    container.appendChild(panelEl);
+    // Append to body to avoid overflow clipping
+    document.body.appendChild(panelEl);
     loadValues();
     setupListeners();
   }

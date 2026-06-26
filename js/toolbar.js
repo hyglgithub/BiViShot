@@ -61,14 +61,14 @@ BiViShot.toolbar = (() => {
 
     document.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
-      const videoRect = videoEl.getBoundingClientRect();
-      let x = e.clientX - dragOffset.x - videoRect.left;
-      let y = e.clientY - dragOffset.y - videoRect.top;
+      // Use viewport coordinates for fixed positioning
+      let x = e.clientX - dragOffset.x;
+      let y = e.clientY - dragOffset.y;
 
-      // Clamp to video bounds
+      // Clamp to viewport bounds
       const toolbarRect = toolbarEl.getBoundingClientRect();
-      x = Math.max(0, Math.min(x, videoRect.width - toolbarRect.width));
-      y = Math.max(0, Math.min(y, videoRect.height - toolbarRect.height));
+      x = Math.max(0, Math.min(x, window.innerWidth - toolbarRect.width));
+      y = Math.max(0, Math.min(y, window.innerHeight - toolbarRect.height));
 
       toolbarEl.style.left = `${x}px`;
       toolbarEl.style.top = `${y}px`;
@@ -136,15 +136,13 @@ BiViShot.toolbar = (() => {
       BiViShot.settings.toggle();
     }));
 
-    // Position toolbar
+    // Position toolbar - append to body to avoid overflow clipping
     const position = await BiViShot.storage.get('toolbarPosition');
     toolbarEl.style.left = `${position.x}px`;
     toolbarEl.style.top = `${position.y}px`;
 
-    // Attach to video container
-    const container = video.closest('.bpx-player-video-wrap') || video.parentElement;
-    container.style.position = 'relative';
-    container.appendChild(toolbarEl);
+    // Append to body instead of video container to avoid overflow:hidden clipping
+    document.body.appendChild(toolbarEl);
 
     setupDrag();
 
