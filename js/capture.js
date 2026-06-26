@@ -77,11 +77,25 @@
         return;
       }
 
+      const format = await window.BiViShot.storage.get('imageFormat');
+      const quality = await window.BiViShot.storage.get('jpegQuality');
+
       try {
-        // Always use PNG for clipboard - ClipboardItem doesn't reliably support JPEG
-        const blob = await captureFrame(video, 'png', 100);
+        let pngBlob;
+        if (format === 'jpeg') {
+          // Capture with JPEG quality, then convert to PNG for clipboard
+          const jpegBlob = await captureFrame(video, 'jpeg', quality);
+          const bitmap = await createImageBitmap(jpegBlob);
+          const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(bitmap, 0, 0);
+          pngBlob = await canvas.convertToBlob({ type: 'image/png' });
+        } else {
+          // PNG - use directly
+          pngBlob = await captureFrame(video, 'png', quality);
+        }
         await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': blob })
+          new ClipboardItem({ 'image/png': pngBlob })
         ]);
       } catch (err) {
         console.error('[BiViShot] Clipboard write failed:', err);

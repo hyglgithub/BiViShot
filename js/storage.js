@@ -11,7 +11,7 @@
     const DEFAULTS = {
       imageFormat: 'png',
       jpegQuality: 95,
-      frameStep: 0.033333,  // 1/30 second
+      frameStep: 0.2,  // 1/5 second
       toolbarPosition: { x: 100, y: 100 }
     };
 
