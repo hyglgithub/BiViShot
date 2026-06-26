@@ -3,35 +3,64 @@
  * Floating icon toolbar for video frame capture
  */
 
-.bivishot-toolbar {
+/* Container for toolbar + settings */
+.bivishot-container {
   position: fixed;
   z-index: 99999;
   display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.75);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  cursor: grab;
-  user-select: none;
+  flex-direction: column;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.bivishot-toolbar:active {
+/* Toolbar */
+.bivishot-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  user-select: none;
+}
+
+/* Drag handle */
+.bivishot-drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 32px;
+  cursor: grab;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+  padding: 0 2px;
+}
+
+.bivishot-drag-handle:hover {
+  opacity: 1;
+}
+
+.bivishot-drag-handle:active {
   cursor: grabbing;
 }
 
+.bivishot-drag-handle svg {
+  width: 12px;
+  height: 24px;
+}
+
+/* Buttons */
 .bivishot-btn {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
   padding: 0;
@@ -40,12 +69,11 @@
 .bivishot-btn svg {
   width: 20px;
   height: 20px;
-  fill: #ffffff;
   transition: transform 0.15s ease;
 }
 
 .bivishot-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .bivishot-btn:hover svg {
@@ -53,7 +81,7 @@
 }
 
 .bivishot-btn.disabled {
-  opacity: 0.4;
+  opacity: 0.3;
   cursor: not-allowed;
 }
 
@@ -86,6 +114,94 @@
   opacity: 1;
 }
 
+/* Settings Panel - integrated below toolbar */
+.bivishot-settings-panel {
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 0 0 8px 8px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  margin-top: -2px;
+  min-width: 100%;
+}
+
+.bivishot-settings-group {
+  margin-bottom: 10px;
+}
+
+.bivishot-settings-group:last-of-type {
+  margin-bottom: 8px;
+}
+
+.bivishot-settings-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bivishot-settings-radios {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bivishot-settings-radios label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.bivishot-settings-radios label:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bivishot-settings-radios input[type="radio"] {
+  accent-color: #00a1d6;
+}
+
+.bivishot-settings-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bivishot-settings-slider input[type="range"] {
+  flex: 1;
+  accent-color: #00a1d6;
+  height: 4px;
+}
+
+.bivishot-settings-slider span {
+  font-size: 12px;
+  color: #ccc;
+  min-width: 35px;
+  text-align: right;
+}
+
+.bivishot-settings-reset {
+  width: 100%;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+
+.bivishot-settings-reset:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
 /* Toast notification */
 .bivishot-toast {
   position: fixed;
@@ -99,6 +215,7 @@
   z-index: 999999;
   animation: bivishot-toast-in 0.3s ease, bivishot-toast-out 0.3s ease 1.7s;
   animation-fill-mode: forwards;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes bivishot-toast-in {
@@ -109,63 +226,4 @@
 @keyframes bivishot-toast-out {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(-10px); }
-}
-
-/* Settings Panel */
-.bivishot-settings-panel .bivishot-settings-header {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #333;
-}
-
-.bivishot-settings-panel .bivishot-settings-group {
-  margin-bottom: 12px;
-}
-
-.bivishot-settings-panel .bivishot-settings-label {
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 6px;
-}
-
-.bivishot-settings-panel .bivishot-settings-radios {
-  display: flex;
-  gap: 10px;
-}
-
-.bivishot-settings-panel .bivishot-settings-radios label {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.bivishot-settings-panel .bivishot-settings-slider {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.bivishot-settings-panel input[type="range"] {
-  flex: 1;
-  accent-color: #00a1d6;
-}
-
-.bivishot-settings-panel .bivishot-settings-reset {
-  width: 100%;
-  padding: 6px;
-  background: #333;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.bivishot-settings-panel .bivishot-settings-reset:hover {
-  background: #444;
 }
