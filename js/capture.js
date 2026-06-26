@@ -77,13 +77,11 @@
         return;
       }
 
-      const format = await window.BiViShot.storage.get('imageFormat');
-      const quality = await window.BiViShot.storage.get('jpegQuality');
-
       try {
-        const blob = await captureFrame(video, format, quality);
+        // Always use PNG for clipboard - ClipboardItem doesn't reliably support JPEG
+        const blob = await captureFrame(video, 'png', 100);
         await navigator.clipboard.write([
-          new ClipboardItem({ [blob.type]: blob })
+          new ClipboardItem({ 'image/png': blob })
         ]);
       } catch (err) {
         console.error('[BiViShot] Clipboard write failed:', err);

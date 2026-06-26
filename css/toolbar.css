@@ -113,12 +113,12 @@
   opacity: 1;
 }
 
-/* Settings Panel - positioned below toolbar, same width */
+/* Settings Panel - positioned below toolbar, left-aligned */
 .bivishot-panel {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  width: 100%;
+  min-width: 280px;
   padding: 12px;
   background: rgba(30, 30, 30, 0.95);
   border-radius: 8px;
