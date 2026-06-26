@@ -2,36 +2,37 @@
  * BiViShot Frame Navigation Module
  * Navigate between video frames when paused
  */
-window.BiViShot = window.BiViShot || {};
-var BiViShot = window.BiViShot;
+(function() {
+  'use strict';
 
-BiViShot.frameNav = (() => {
-  function getVideoElement() {
-    return BiViShot.capture ? BiViShot.capture.getVideoElement() : null;
-  }
+  window.BiViShot = window.BiViShot || {};
 
-  function isPaused() {
-    const video = getVideoElement();
-    return video ? video.paused : false;
-  }
+  window.BiViShot.frameNav = (() => {
+    function getVideoElement() {
+      return window.BiViShot.capture ? window.BiViShot.capture.getVideoElement() : null;
+    }
 
-  async function previousFrame() {
-    const video = getVideoElement();
-    if (!video || !video.paused) return;
+    function isPaused() {
+      const video = getVideoElement();
+      return video ? video.paused : false;
+    }
 
-    const frameStep = await BiViShot.storage.get('frameStep');
-    video.currentTime = Math.max(0, video.currentTime - frameStep);
-  }
+    async function previousFrame() {
+      const video = getVideoElement();
+      if (!video || !video.paused) return;
 
-  async function nextFrame() {
-    const video = getVideoElement();
-    if (!video || !video.paused) return;
+      const frameStep = await window.BiViShot.storage.get('frameStep');
+      video.currentTime = Math.max(0, video.currentTime - frameStep);
+    }
 
-    const frameStep = await BiViShot.storage.get('frameStep');
-    video.currentTime = Math.min(video.duration, video.currentTime + frameStep);
-  }
+    async function nextFrame() {
+      const video = getVideoElement();
+      if (!video || !video.paused) return;
 
-  return { previousFrame, nextFrame, isPaused };
+      const frameStep = await window.BiViShot.storage.get('frameStep');
+      video.currentTime = Math.min(video.duration, video.currentTime + frameStep);
+    }
+
+    return { previousFrame, nextFrame, isPaused };
+  })();
 })();
-
-window.BiViShot = BiViShot;
